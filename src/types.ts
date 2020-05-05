@@ -3,6 +3,8 @@ export interface Properties {
   getPointAtLength(pos: number): Point;
   getTangentAtLength(pos: number): Point;
   getPropertiesAtLength(pos: number): PointProperties;
+  shiftPathBy(dx: number, dy: number): string;
+  path(): string;
 }
 
 export interface PartProperties {
@@ -12,6 +14,8 @@ export interface PartProperties {
   getPointAtLength(pos: number): Point;
   getTangentAtLength(pos: number): Point;
   getPropertiesAtLength(pos: number): PointProperties;
+  shiftPathBy(dx: number, dy: number): string;
+  path(): string;
 }
 export interface Point {
   x: number;

@@ -32,7 +32,7 @@ export class Arc implements Properties {
     this.x1 = x1;
     this.y1 = y1;
 
-    const lengthProperties = approximateArcLengthOfCurve(300, function(t: number) {
+    const lengthProperties = approximateArcLengthOfCurve(300, function (t: number) {
       return pointOnEllipticalArc(
         { x: x0, y: y0 },
         rx,
@@ -110,6 +110,23 @@ export class Arc implements Properties {
     const point = this.getPointAtLength(fractionLength);
     return { x: point.x, y: point.y, tangentX: tangent.x, tangentY: tangent.y };
   };
+
+  public path = () => {
+    return this.shiftPathBy();
+  }
+
+  public shiftPathBy = (dx: number = 0, dy: number = 0) => {
+    const rx = this.rx;
+    const ry = this.ry;
+    const xAxisRotate = this.xAxisRotate || 0;
+    const largeArcFlag = this.LargeArcFlag || 0;
+    const sweepFlag = this.SweepFlag || 0;
+    const x1 = this.x1;
+    const y1 = this.y1;
+
+    // rx ry x-axis-rotation large-arc-flag sweep-flag x y
+    return `A${rx},${ry} ${xAxisRotate} ${largeArcFlag},${sweepFlag} ${x1 + dx}, ${y1 + dy} `;
+  }
 }
 
 interface PointOnEllipticalArc {

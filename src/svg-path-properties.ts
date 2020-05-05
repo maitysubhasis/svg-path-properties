@@ -456,6 +456,30 @@ export default class svgPathProperties implements Properties {
     return getBounds(this.string)
   }
 
+  public path = () => {
+    const start = this.getPointAtLength(0);
+    const { x, y } = start;
+    let str = `M${x},${y} `;
+
+    for (const fn of this.functions) {
+      if (!fn) continue;
+      str += fn.path()
+    }
+    return str;
+  }
+
+  public shiftPathBy = (dx: number = 0, dy: number = 0) => {
+    const start = this.getPointAtLength(0);
+    const { x, y } = start;
+    let str = `M${x + dx},${y + dy} `;
+
+    for (const fn of this.functions) {
+      if (!fn) continue;
+      str += fn.shiftPathBy(dx, dy)
+    }
+    return str;
+  }
+
   public getParts = () => {
     const parts = [];
     for (var i = 0; i < this.functions.length; i++) {
@@ -469,7 +493,9 @@ export default class svgPathProperties implements Properties {
           length: this.partial_lengths[i] - this.partial_lengths[i - 1],
           getPointAtLength: this.functions[i]!.getPointAtLength,
           getTangentAtLength: this.functions[i]!.getTangentAtLength,
-          getPropertiesAtLength: this.functions[i]!.getPropertiesAtLength
+          getPropertiesAtLength: this.functions[i]!.getPropertiesAtLength,
+          shiftPathBy: this.functions[i]!.shiftPathBy,
+          path: this.functions[i]!.path
         };
         parts.push(properties);
       }

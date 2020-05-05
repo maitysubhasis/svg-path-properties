@@ -34,7 +34,7 @@ export class LinearPosition implements Properties {
   public getTangentAtLength = (_: number): Point => {
     const module = Math.sqrt(
       (this.x1 - this.x0) * (this.x1 - this.x0) +
-        (this.y1 - this.y0) * (this.y1 - this.y0)
+      (this.y1 - this.y0) * (this.y1 - this.y0)
     );
     return { x: (this.x1 - this.x0) / module, y: (this.y1 - this.y0) / module };
   };
@@ -44,4 +44,14 @@ export class LinearPosition implements Properties {
     const tangent = this.getTangentAtLength(pos);
     return { x: point.x, y: point.y, tangentX: tangent.x, tangentY: tangent.y };
   };
+
+  public path = () => {
+    return this.shiftPathBy();
+  }
+
+  public shiftPathBy = (dx: number = 0, dy: number = 0) => {
+    const x1 = this.x1 + dx;
+    const y1 = this.y1 + dy;
+    return `L${x1},${y1} `;
+  }
 }

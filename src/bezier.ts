@@ -124,6 +124,20 @@ export class Bezier implements Properties {
     return { x: point.x, y: point.y, tangentX: tangent.x, tangentY: tangent.y };
   };
 
+  public path = () => {
+    return this.shiftPathBy();
+  }
+
+  public shiftPathBy = (dx: number = 0, dy: number = 0) => {
+    const { a, b, c, d } = this
+
+    if (d.x === 0 && d.y === 0) {
+      return `C${a.x + dx},${a.y + dy} ${b.x + dx},${b.y + dy} ${c.x + dx},${c.y + dy} `;
+    } else {
+      return `C${a.x + dx},${a.y + dy} ${b.x + dx},${b.y + dy} ${c.x + dx},${c.y + dy} ${d.x + dx},${d.y + dy} `;
+    }
+  }
+
   public getC = () => {
     return this.c;
   };
