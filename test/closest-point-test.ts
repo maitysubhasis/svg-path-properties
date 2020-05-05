@@ -1,7 +1,5 @@
 import * as test from "tape";
-import { LinearPosition } from "../src/linear";
 import SVGPathProperties from "../src/svg-path-properties";
-import { inDelta } from "./inDelta";
 
 test("Testing the lineTo", function (test) {
   let properties = new SVGPathProperties("M2,2L2,8L8,8L8,2");

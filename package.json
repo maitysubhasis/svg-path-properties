@@ -35,7 +35,8 @@
   },
   "license": "ISC",
   "dependencies": {
-    "point-in-svg-path": "^1.0.1"
+    "point-in-svg-path": "^1.0.1",
+    "svg-path-bounds": "^1.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.7.2",

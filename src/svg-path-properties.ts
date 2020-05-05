@@ -3,7 +3,8 @@ import { PointArray, Properties, PartProperties, Point } from "./types";
 import { LinearPosition } from "./linear";
 import { Arc } from "./arc";
 import { Bezier } from "./bezier";
-import { pointInSvgPath } from 'point-in-svg-path'
+import { pointInSvgPath } from 'point-in-svg-path';
+const getBounds = require('svg-path-bounds');
 
 export default class svgPathProperties implements Properties {
   private length: number = 0;
@@ -440,8 +441,6 @@ export default class svgPathProperties implements Properties {
 
     const pathString = this.isClosed() ? this.string : this.string //+ 'z';
 
-    console.log(pathString, x, y)
-
     return {
       x: Math.round(best.x),
       y: Math.round(best.y),
@@ -452,6 +451,10 @@ export default class svgPathProperties implements Properties {
       closed: this.isClosed(),
     }
   };
+
+  public bound = () => {
+    return getBounds(this.string)
+  }
 
   public getParts = () => {
     const parts = [];
