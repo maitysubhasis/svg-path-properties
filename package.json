@@ -34,7 +34,9 @@
     "url": "https://geoexamples.com"
   },
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "point-in-svg-path": "^1.0.1"
+  },
   "devDependencies": {
     "@babel/core": "^7.7.2",
     "@babel/plugin-proposal-class-properties": "^7.7.0",

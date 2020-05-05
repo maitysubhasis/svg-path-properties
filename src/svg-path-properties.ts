@@ -1,19 +1,24 @@
 import parse from "./parse";
-import { PointArray, Properties, PartProperties } from "./types";
+import { PointArray, Properties, PartProperties, Point } from "./types";
 import { LinearPosition } from "./linear";
 import { Arc } from "./arc";
 import { Bezier } from "./bezier";
+import { pointInSvgPath } from 'point-in-svg-path'
 
-export default class SVGPathProperties implements Properties {
+export default class svgPathProperties implements Properties {
   private length: number = 0;
   private partial_lengths: number[] = [];
   private functions: (null | Properties)[] = [];
+  private string: String = '';
+
   constructor(string: string) {
+    this.string = string;
     const parsed = parse(string);
     let cur: PointArray = [0, 0];
     let prev_point: PointArray = [0, 0];
     let curve: Bezier | undefined;
     let ringStart: PointArray = [0, 0];
+
     for (let i = 0; i < parsed.length; i++) {
       //moveTo
       if (parsed[i][0] === "M") {
@@ -28,7 +33,7 @@ export default class SVGPathProperties implements Properties {
       } else if (parsed[i][0] === "L") {
         this.length += Math.sqrt(
           Math.pow(cur[0] - parsed[i][1], 2) +
-            Math.pow(cur[1] - parsed[i][2], 2)
+          Math.pow(cur[1] - parsed[i][2], 2)
         );
         this.functions.push(
           new LinearPosition(cur[0], parsed[i][1], cur[1], parsed[i][2])
@@ -75,7 +80,7 @@ export default class SVGPathProperties implements Properties {
       } else if (parsed[i][0] === "z" || parsed[i][0] === "Z") {
         this.length += Math.sqrt(
           Math.pow(ringStart[0] - cur[0], 2) +
-            Math.pow(ringStart[1] - cur[1], 2)
+          Math.pow(ringStart[1] - cur[1], 2)
         );
         this.functions.push(
           new LinearPosition(cur[0], ringStart[0], cur[1], ringStart[1])
@@ -377,6 +382,75 @@ export default class SVGPathProperties implements Properties {
       return functionAtPart.getPropertiesAtLength(fractionPart.fraction);
     }
     throw new Error("Wrong function at this part.");
+  };
+
+  public isClosed = () => {
+    const round = Math.round
+    const start = this.getPointAtLength(0)
+    const end = this.getPointAtLength(this.getTotalLength())
+    return round(start.x) == round(end.x) && round(start.y) === round(end.y)
+  };
+
+  public closestPoint = (point: Point, binaryPrecision: number = 0.3, coarsePrecision: number = 5) => {
+    const { x, y } = point
+    const distance = (p: Point) => {
+      const dx = p.x - x;
+      const dy = p.y - y;
+      return dx * dx + dy * dy;
+    }
+
+    var pathLength = this.getTotalLength(),
+      best,
+      bestLength,
+      bestDistance = Infinity;
+
+    // treat {binaryPrecision} and {coarsePrecision} are provided for length {100}
+    binaryPrecision = (binaryPrecision * pathLength) / 100
+    coarsePrecision = (coarsePrecision * pathLength) / 100
+
+    // linear scan for coarse approximation
+    for (var scan, scanLength = 0, scanDistance; scanLength <= pathLength; scanLength += coarsePrecision) {
+      if ((scanDistance = distance(scan = this.getPointAtLength(scanLength))) < bestDistance) {
+        best = scan, bestLength = scanLength, bestDistance = scanDistance;
+      }
+    }
+
+    coarsePrecision /= 2;
+    while (coarsePrecision > binaryPrecision) {
+      var before,
+        after,
+        beforeLength,
+        afterLength,
+        beforeDistance,
+        afterDistance;
+      if (
+        (beforeLength = bestLength - coarsePrecision) >= 0 &&
+        (beforeDistance = distance(before = this.getPointAtLength(beforeLength))) < bestDistance
+      ) {
+        best = before, bestLength = beforeLength, bestDistance = beforeDistance;
+      } else if (
+        (afterLength = bestLength + coarsePrecision) <= pathLength &&
+        (afterDistance = distance(after = this.getPointAtLength(afterLength))) < bestDistance
+      ) {
+        best = after, bestLength = afterLength, bestDistance = afterDistance;
+      } else {
+        coarsePrecision /= 2;
+      }
+    }
+
+    const pathString = this.isClosed() ? this.string : this.string //+ 'z';
+
+    console.log(pathString, x, y)
+
+    return {
+      x: Math.round(best.x),
+      y: Math.round(best.y),
+      length: bestLength,
+      distance: Math.sqrt(bestDistance),
+      slope: this.getTangentAtLength(bestLength),
+      within: pointInSvgPath(pathString, x, y),
+      closed: this.isClosed(),
+    }
   };
 
   public getParts = () => {
