@@ -1,4 +1,4 @@
-import { Properties, Point } from "./types";
+import { Properties, Point, MatrixArray, PointArray } from "./types";
 
 import {
   cubicPoint,
@@ -9,6 +9,7 @@ import {
   quadraticDerivative,
   t2length
 } from "./bezier-functions";
+import { transformPoint } from "./svg-path-properties";
 
 export class Bezier implements Properties {
   private a: Point;
@@ -124,6 +125,16 @@ export class Bezier implements Properties {
     return { x: point.x, y: point.y, tangentX: tangent.x, tangentY: tangent.y };
   };
 
+
+  public points = () => {
+    const { a, b, c, d } = this
+    const points = [a, b, c];
+    if (d.x !== 0 || d.y !== 0) {
+      points.push(d);
+    }
+    return points;
+  }
+
   public path = () => {
     return this.shiftPathBy();
   }
@@ -135,6 +146,20 @@ export class Bezier implements Properties {
       return `C${a.x + dx},${a.y + dy} ${b.x + dx},${b.y + dy} ${c.x + dx},${c.y + dy} `;
     } else {
       return `C${a.x + dx},${a.y + dy} ${b.x + dx},${b.y + dy} ${c.x + dx},${c.y + dy} ${d.x + dx},${d.y + dy} `;
+    }
+  }
+
+  public transform = (origin: Point, transformers: MatrixArray) => {
+    const { a: ia, b: ib, c: ic, d: id } = this
+    const a = transformPoint(ia, origin, transformers);
+    const b = transformPoint(ib, origin, transformers);
+    const c = transformPoint(ic, origin, transformers);
+    const d = transformPoint(id, origin, transformers);
+
+    if (id.x === 0 && id.y === 0) {
+      return `C${a.x},${a.y} ${b.x},${b.y} ${c.x},${c.y} `;
+    } else {
+      return `C${a.x},${a.y} ${b.x},${b.y} ${c.x},${c.y} ${d.x},${d.y} `;
     }
   }
 

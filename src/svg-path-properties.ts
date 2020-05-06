@@ -1,5 +1,5 @@
 import parse from "./parse";
-import { PointArray, Properties, PartProperties, Point } from "./types";
+import { PointArray, Properties, PartProperties, Point, MatrixArray, Matrix } from "./types";
 import { LinearPosition } from "./linear";
 import { Arc } from "./arc";
 import { Bezier } from "./bezier";
@@ -11,9 +11,19 @@ export default class svgPathProperties implements Properties {
   private partial_lengths: number[] = [];
   private functions: (null | Properties)[] = [];
   private string: String = '';
+  private rotateAngle: number = 0;
 
   constructor(string: string) {
+    this.string = '';
+    this.load(string);
+  }
+
+  public load = (string: string) => {
     this.string = string;
+    this.length = 0;
+    this.partial_lengths = [];
+    this.functions = [];
+
     const parsed = parse(string);
     let cur: PointArray = [0, 0];
     let prev_point: PointArray = [0, 0];
@@ -452,8 +462,23 @@ export default class svgPathProperties implements Properties {
     }
   };
 
+  public center = () => {
+    const [left, top, right, bottom] = this.bound();
+
+    return {
+      x: (left + right) / 2,
+      y: (top + bottom) / 2,
+    }
+  }
+
   public bound = () => {
     return getBounds(this.string)
+  }
+
+  public points = () => {
+    return this.functions.filter(a => a).reduce((a, f) => {
+      return a.concat(f.points());
+    }, [this.getPointAtLength(0)]);
   }
 
   public path = () => {
@@ -480,6 +505,67 @@ export default class svgPathProperties implements Properties {
     return str;
   }
 
+  public translate = (dx: number, dy: number) => {
+    const path = this.shiftPathBy(dx, dy)
+    this.load(path);
+    return path
+  }
+
+  public transform = (origin: Point, transformers: MatrixArray) => {
+    const start = this.getPointAtLength(0);
+    const tstart = transformPoint(start, origin, transformers)
+
+    const { x, y } = tstart;
+    let str = `M${x},${y} `;
+
+    for (const fn of this.functions) {
+      if (!fn) continue;
+      str += fn.transform(origin, transformers)
+    }
+    return str;
+  }
+
+  public rotateBy = (angle: number) => {
+    return this.rotate(this.center(), angle);
+  }
+
+  public rotate = (origin: Point, angle: number) => {
+    this.rotateAngle += angle;
+    const radian = angle * (Math.PI / 180);
+    const cos = Math.cos(radian)
+    const sin = Math.sin(radian)
+    const transformer: Matrix = [
+      cos, -sin,
+      sin, cos
+    ];
+
+    const path = this.transform(origin, [transformer]);
+    this.load(path);
+    return path
+  }
+
+  public scale = (origin: Point, scales: PointArray) => {
+    const [sx, sy] = scales;
+    const radian = this.rotateAngle * (Math.PI / 180);
+    const cos = Math.cos(radian)
+    const sin = Math.sin(radian)
+
+    const a = cos * sx;
+    const b = -sin * sx;
+    const c = sin * sy;
+    const d = cos * sy;
+    const transformer: Matrix = [
+      a, b, c, d
+    ]
+
+    let path = this.transform(origin, [transformer]);
+    this.load(path);
+    path = this.rotate(origin, -this.rotateAngle);
+    this.load(path);
+
+    return path
+  }
+
   public getParts = () => {
     const parts = [];
     for (var i = 0; i < this.functions.length; i++) {
@@ -495,7 +581,9 @@ export default class svgPathProperties implements Properties {
           getTangentAtLength: this.functions[i]!.getTangentAtLength,
           getPropertiesAtLength: this.functions[i]!.getPropertiesAtLength,
           shiftPathBy: this.functions[i]!.shiftPathBy,
-          path: this.functions[i]!.path
+          path: this.functions[i]!.path,
+          transform: this.functions[i]!.transform,
+          points: this.functions[i]!.points
         };
         parts.push(properties);
       }
@@ -503,4 +591,27 @@ export default class svgPathProperties implements Properties {
 
     return parts;
   };
+}
+
+export function transformPoint(point: Point, origin: Point, transformers: MatrixArray) {
+  const { x: x0, y: y0 } = origin;
+  const { x: ix, y: iy } = point;
+  let x = ix - x0;
+  let y = iy - y0;
+
+  let tx = 0
+  let ty = 0
+
+  transformers.forEach(transformer => {
+    const [x1, y1, x2, y2] = transformer;
+    tx = x1 * x + y1 * y
+    ty = x2 * x + y2 * y
+    x = tx
+    y = ty
+  });
+
+  return {
+    x: Math.round(x) + x0,
+    y: Math.round(y) + y0,
+  }
 }

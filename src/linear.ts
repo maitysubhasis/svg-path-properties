@@ -1,4 +1,5 @@
-import { Properties, Point, PointProperties } from "./types";
+import { Properties, Point, PointProperties, MatrixArray } from "./types";
+import { transformPoint } from "./svg-path-properties";
 
 export class LinearPosition implements Properties {
   private x0: number;
@@ -45,6 +46,13 @@ export class LinearPosition implements Properties {
     return { x: point.x, y: point.y, tangentX: tangent.x, tangentY: tangent.y };
   };
 
+  public points = () => {
+    return [{
+      x: this.x1,
+      y: this.y1,
+    }]
+  }
+
   public path = () => {
     return this.shiftPathBy();
   }
@@ -53,5 +61,14 @@ export class LinearPosition implements Properties {
     const x1 = this.x1 + dx;
     const y1 = this.y1 + dy;
     return `L${x1},${y1} `;
+  }
+
+  public transform = (origin: Point, transformers: MatrixArray) => {
+    const { x, y } = transformPoint({
+      x: this.x1,
+      y: this.y1
+    }, origin, transformers);
+
+    return `L${x},${y} `;
   }
 }

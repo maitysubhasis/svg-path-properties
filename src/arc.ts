@@ -1,4 +1,5 @@
-import { Properties, Point, PointProperties } from "./types";
+import { Properties, Point, PointProperties, MatrixArray } from "./types";
+import { transformPoint } from "./svg-path-properties";
 
 export class Arc implements Properties {
   private x0: number;
@@ -111,6 +112,16 @@ export class Arc implements Properties {
     return { x: point.x, y: point.y, tangentX: tangent.x, tangentY: tangent.y };
   };
 
+  public points = () => {
+    const x1 = this.x1;
+    const y1 = this.y1;
+
+    return [{
+      x: x1,
+      y: y1
+    }];
+  }
+
   public path = () => {
     return this.shiftPathBy();
   }
@@ -126,6 +137,21 @@ export class Arc implements Properties {
 
     // rx ry x-axis-rotation large-arc-flag sweep-flag x y
     return `A${rx},${ry} ${xAxisRotate} ${largeArcFlag},${sweepFlag} ${x1 + dx}, ${y1 + dy} `;
+  }
+
+  public transform = (origin: Point, transformers: MatrixArray) => {
+    const rx = this.rx;
+    const ry = this.ry;
+    const xAxisRotate = this.xAxisRotate || 0;
+    const largeArcFlag = this.LargeArcFlag || 0;
+    const sweepFlag = this.SweepFlag || 0;
+    const x1 = this.x1;
+    const y1 = this.y1;
+
+    const p = transformPoint({ x: x1, y: y1 }, origin, transformers);
+
+    // rx ry x-axis-rotation large-arc-flag sweep-flag x y
+    return `A${rx},${ry} ${xAxisRotate} ${largeArcFlag},${sweepFlag} ${p.x}, ${p.y} `;
   }
 }
 
