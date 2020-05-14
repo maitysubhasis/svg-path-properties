@@ -1,4 +1,4 @@
-import { Properties, Point, MatrixArray, PointArray } from "./types";
+import { Properties, Point, MatrixArray } from "./types";
 
 import {
   cubicPoint,

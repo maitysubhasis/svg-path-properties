@@ -3,15 +3,15 @@ import { PointArray, Properties, PartProperties, Point, MatrixArray, Matrix } fr
 import { LinearPosition } from "./linear";
 import { Arc } from "./arc";
 import { Bezier } from "./bezier";
-import { pointInSvgPath } from 'point-in-svg-path';
 const getBounds = require('svg-path-bounds');
+import { pointInSvgPath } from 'point-in-svg-path';
 
 export default class svgPathProperties implements Properties {
   private length: number = 0;
   private partial_lengths: number[] = [];
   private functions: (null | Properties)[] = [];
   private string: String = '';
-  private rotateAngle: number = 0;
+  private rotation: number = 0;
 
   constructor(string: string) {
     this.string = '';
@@ -411,8 +411,11 @@ export default class svgPathProperties implements Properties {
     }
 
     var pathLength = this.getTotalLength(),
-      best,
-      bestLength,
+      best = {
+        x: Infinity,
+        y: Infinity,
+      },
+      bestLength = Infinity,
       bestDistance = Infinity;
 
     // treat {binaryPrecision} and {coarsePrecision} are provided for length {100}
@@ -476,7 +479,8 @@ export default class svgPathProperties implements Properties {
   }
 
   public points = () => {
-    return this.functions.filter(a => a).reduce((a, f) => {
+    return this.functions.reduce((a, f) => {
+      if (f === null) return a
       return a.concat(f.points());
     }, [this.getPointAtLength(0)]);
   }
@@ -529,8 +533,7 @@ export default class svgPathProperties implements Properties {
     return this.rotate(this.center(), angle);
   }
 
-  public rotate = (origin: Point, angle: number) => {
-    this.rotateAngle += angle;
+  public withoutRotation = (origin: Point = this.center(), angle: number = -this.rotation) => {
     const radian = angle * (Math.PI / 180);
     const cos = Math.cos(radian)
     const sin = Math.sin(radian)
@@ -540,13 +543,19 @@ export default class svgPathProperties implements Properties {
     ];
 
     const path = this.transform(origin, [transformer]);
+    return path
+  }
+
+  public rotate = (origin: Point, angle: number) => {
+    this.rotation += angle;
+    const path = this.withoutRotation(origin, angle)
     this.load(path);
     return path
   }
 
   public scale = (origin: Point, scales: PointArray) => {
     const [sx, sy] = scales;
-    const radian = this.rotateAngle * (Math.PI / 180);
+    const radian = this.rotation * (Math.PI / 180);
     const cos = Math.cos(radian)
     const sin = Math.sin(radian)
 
@@ -560,7 +569,7 @@ export default class svgPathProperties implements Properties {
 
     let path = this.transform(origin, [transformer]);
     this.load(path);
-    path = this.rotate(origin, -this.rotateAngle);
+    path = this.rotate(origin, -this.rotation);
     this.load(path);
 
     return path

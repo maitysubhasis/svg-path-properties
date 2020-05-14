@@ -1,4 +1,4 @@
-import { Properties, Point, PointProperties } from "./types";
+import { Properties, Point, PointProperties, MatrixArray } from "./types";
 export declare class Arc implements Properties {
     private x0;
     private y0;
@@ -15,4 +15,11 @@ export declare class Arc implements Properties {
     getPointAtLength: (fractionLength: number) => Point;
     getTangentAtLength: (fractionLength: number) => Point;
     getPropertiesAtLength: (fractionLength: number) => PointProperties;
+    points: () => {
+        x: number;
+        y: number;
+    }[];
+    path: () => string;
+    shiftPathBy: (dx?: number, dy?: number) => string;
+    transform: (origin: Point, transformers: MatrixArray) => string;
 }

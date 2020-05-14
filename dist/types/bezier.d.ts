@@ -1,4 +1,4 @@
-import { Properties, Point } from "./types";
+import { Properties, Point, MatrixArray } from "./types";
 export declare class Bezier implements Properties {
     private a;
     private b;
@@ -18,6 +18,10 @@ export declare class Bezier implements Properties {
         tangentX: number;
         tangentY: number;
     };
+    points: () => Point[];
+    path: () => string;
+    shiftPathBy: (dx?: number, dy?: number) => string;
+    transform: (origin: Point, transformers: MatrixArray) => string;
     getC: () => Point;
     getD: () => Point;
 }

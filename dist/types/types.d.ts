@@ -3,6 +3,10 @@ export interface Properties {
     getPointAtLength(pos: number): Point;
     getTangentAtLength(pos: number): Point;
     getPropertiesAtLength(pos: number): PointProperties;
+    shiftPathBy(dx: number, dy: number): string;
+    path(): string;
+    transform(origin: Point, transformers: MatrixArray): string;
+    points(): PointsArray;
 }
 export interface PartProperties {
     start: Point;
@@ -11,12 +15,19 @@ export interface PartProperties {
     getPointAtLength(pos: number): Point;
     getTangentAtLength(pos: number): Point;
     getPropertiesAtLength(pos: number): PointProperties;
+    shiftPathBy(dx: number, dy: number): string;
+    path(): string;
+    transform(origin: Point, transformers: MatrixArray): string;
+    points(): PointsArray;
 }
 export interface Point {
     x: number;
     y: number;
 }
 export declare type PointArray = [number, number];
+export declare type PointsArray = any[];
+export declare type Matrix = [number, number, number, number];
+export declare type MatrixArray = [Matrix];
 export interface PointProperties {
     x: number;
     y: number;

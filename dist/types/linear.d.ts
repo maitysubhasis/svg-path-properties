@@ -1,4 +1,4 @@
-import { Properties, Point, PointProperties } from "./types";
+import { Properties, Point, PointProperties, MatrixArray } from "./types";
 export declare class LinearPosition implements Properties {
     private x0;
     private x1;
@@ -9,4 +9,11 @@ export declare class LinearPosition implements Properties {
     getPointAtLength: (pos: number) => Point;
     getTangentAtLength: (_: number) => Point;
     getPropertiesAtLength: (pos: number) => PointProperties;
+    points: () => {
+        x: number;
+        y: number;
+    }[];
+    path: () => string;
+    shiftPathBy: (dx?: number, dy?: number) => string;
+    transform: (origin: Point, transformers: MatrixArray) => string;
 }
