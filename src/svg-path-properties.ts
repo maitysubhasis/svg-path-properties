@@ -515,25 +515,22 @@ export default class svgPathProperties implements Properties {
     return path
   }
 
-  public transform = (origin: Point, transformers: MatrixArray) => {
-    const start = this.getPointAtLength(0);
-    const tstart = transformPoint(start, origin, transformers)
-
-    const { x, y } = tstart;
-    let str = `M${x},${y} `;
-
-    for (const fn of this.functions) {
-      if (!fn) continue;
-      str += fn.transform(origin, transformers)
-    }
-    return str;
-  }
-
   public rotateBy = (angle: number) => {
     return this.rotate(this.center(), angle);
   }
 
-  public withoutRotation = (origin: Point = this.center(), angle: number = -this.rotation) => {
+  public withoutRotation = () => {
+    return this.rotatedPath(this.center(), -this.rotation)
+  }
+
+  public rotate = (origin: Point, angle: number) => {
+    this.rotation += angle;
+    const path = this.rotatedPath(origin, angle)
+    this.load(path);
+    return path
+  }
+
+  public rotatedPath = (origin: Point, angle: number) => {
     const radian = angle * (Math.PI / 180);
     const cos = Math.cos(radian)
     const sin = Math.sin(radian)
@@ -542,15 +539,7 @@ export default class svgPathProperties implements Properties {
       sin, cos
     ];
 
-    const path = this.transform(origin, [transformer]);
-    return path
-  }
-
-  public rotate = (origin: Point, angle: number) => {
-    this.rotation += angle;
-    const path = this.withoutRotation(origin, angle)
-    this.load(path);
-    return path
+    return this.transform(origin, [transformer]);
   }
 
   public scale = (origin: Point, scales: PointArray) => {
@@ -573,6 +562,20 @@ export default class svgPathProperties implements Properties {
     this.load(path);
 
     return path
+  }
+
+  public transform = (origin: Point, transformers: MatrixArray) => {
+    const start = this.getPointAtLength(0);
+    const tstart = transformPoint(start, origin, transformers)
+
+    const { x, y } = tstart;
+    let str = `M${x},${y} `;
+
+    for (const fn of this.functions) {
+      if (!fn) continue;
+      str += fn.transform(origin, transformers)
+    }
+    return str;
   }
 
   public getParts = () => {

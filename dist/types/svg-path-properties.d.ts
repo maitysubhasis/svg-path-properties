@@ -31,11 +31,12 @@ export default class svgPathProperties implements Properties {
     path: () => string;
     shiftPathBy: (dx?: number, dy?: number) => string;
     translate: (dx: number, dy: number) => string;
-    transform: (origin: Point, transformers: MatrixArray) => string;
     rotateBy: (angle: number) => string;
-    withoutRotation: (origin?: Point, angle?: number) => string;
+    withoutRotation: () => string;
     rotate: (origin: Point, angle: number) => string;
+    rotatedPath: (origin: Point, angle: number) => string;
     scale: (origin: Point, scales: PointArray) => string;
+    transform: (origin: Point, transformers: MatrixArray) => string;
     getParts: () => PartProperties[];
 }
 export declare function transformPoint(point: Point, origin: Point, transformers: MatrixArray): {
