@@ -24,6 +24,8 @@ export default class svgPathProperties implements Properties {
     this.partial_lengths = [];
     this.functions = [];
 
+    console.log(string)
+
     const parsed = parse(string);
     let cur: PointArray = [0, 0];
     let prev_point: PointArray = [0, 0];
@@ -309,6 +311,7 @@ export default class svgPathProperties implements Properties {
         prev_point = [2 * cur[0] - prev_point[0], 2 * cur[1] - prev_point[1]];
         cur = [parsed[i][1] + cur[0], parsed[i][2] + cur[0]];
       } else if (parsed[i][0] === "A") {
+        console.log(parsed)
         const arcCurve = new Arc(
           cur[0],
           cur[1],
@@ -321,6 +324,7 @@ export default class svgPathProperties implements Properties {
           parsed[i][7]
         );
 
+        console.log('--------')
         this.length += arcCurve.getTotalLength();
         cur = [parsed[i][6], parsed[i][7]];
         this.functions.push(arcCurve);

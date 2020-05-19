@@ -131,12 +131,12 @@ export class Arc implements Properties {
     const ry = this.ry;
     const xAxisRotate = this.xAxisRotate || 0;
     const largeArcFlag = this.LargeArcFlag || 0;
-    const sweepFlag = this.SweepFlag || 0;
+    const sweepFlag = this.SweepFlag ? 1 : 0;
     const x1 = this.x1;
     const y1 = this.y1;
 
     // rx ry x-axis-rotation large-arc-flag sweep-flag x y
-    return `A${rx},${ry} ${xAxisRotate} ${largeArcFlag},${sweepFlag} ${x1 + dx}, ${y1 + dy} `;
+    return `A${rx} ${ry} ${xAxisRotate} ${largeArcFlag} ${sweepFlag} ${x1 + dx} ${y1 + dy} `;
   }
 
   public transform = (origin: Point, transformers: MatrixArray) => {
@@ -144,14 +144,14 @@ export class Arc implements Properties {
     const ry = this.ry;
     const xAxisRotate = this.xAxisRotate || 0;
     const largeArcFlag = this.LargeArcFlag || 0;
-    const sweepFlag = this.SweepFlag || 0;
+    const sweepFlag = this.SweepFlag ? 1 : 0;
     const x1 = this.x1;
     const y1 = this.y1;
 
     const p = transformPoint({ x: x1, y: y1 }, origin, transformers);
 
     // rx ry x-axis-rotation large-arc-flag sweep-flag x y
-    return `A${rx},${ry} ${xAxisRotate} ${largeArcFlag},${sweepFlag} ${p.x}, ${p.y} `;
+    return `A${rx} ${ry} ${xAxisRotate} ${largeArcFlag} ${sweepFlag} ${p.x} ${p.y} `;
   }
 }
 

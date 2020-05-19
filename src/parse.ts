@@ -20,6 +20,7 @@ export default (path: string) => {
   if (!segments) {
     throw new Error(`No path elements found in string ${path}`);
   }
+
   return segments.reduce(
     (segmentsArray: [string, ...Array<number>][], segmentString: string) => {
       let command = segmentString.charAt(0);
