@@ -36,7 +36,7 @@
   "license": "ISC",
   "dependencies": {
     "point-in-svg-path": "^1.0.1",
-    "svg-path-bounds": "^1.0.1"
+    "svg-path-bounds": "https://github.com/maitysubhasis/svg-path-bounds.git#56c5ae2"
   },
   "devDependencies": {
     "@babel/core": "^7.7.2",

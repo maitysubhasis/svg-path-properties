@@ -1686,10 +1686,9 @@ node-releases@^1.1.53:
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-1.1.54.tgz#0a6b3916a7ddfd9656983fcde82cf38d1dbe1a6f"
   integrity sha512-tLzytKpgwKQr37yw9CEODjNM9lnmsNxzlv575GzOZ16AgMvPcJis/DgrJX4UEV1KIYoXk6XoVfY6YaMOPJESAQ==
 
-normalize-svg-path@^1.0.0:
+"normalize-svg-path@https://github.com/etgryphon/normalize-svg-path#2f4c9626b677af208d8d8a60a59534f09af7109b":
   version "1.0.1"
-  resolved "https://registry.yarnpkg.com/normalize-svg-path/-/normalize-svg-path-1.0.1.tgz#6f729ad6b70bb4ca4eff2fe4b107489efe1d56fe"
-  integrity sha1-b3Ka1rcLtMpO/y/ksQdInv4dVv4=
+  resolved "https://github.com/etgryphon/normalize-svg-path#2f4c9626b677af208d8d8a60a59534f09af7109b"
   dependencies:
     svg-arc-to-cubic-bezier "^3.0.0"
 
@@ -2202,14 +2201,13 @@ svg-arc-to-cubic-bezier@^3.0.0:
   resolved "https://registry.yarnpkg.com/svg-arc-to-cubic-bezier/-/svg-arc-to-cubic-bezier-3.2.0.tgz#390c450035ae1c4a0104d90650304c3bc814abe6"
   integrity sha512-djbJ/vZKZO+gPoSDThGNpKDO+o+bAeA4XQKovvkNCqnIS2t+S4qnLAGQhyyrulhCFRl1WWzAp0wUDV8PpTVU3g==
 
-svg-path-bounds@^1.0.1:
+"svg-path-bounds@https://github.com/maitysubhasis/svg-path-bounds.git#56c5ae2":
   version "1.0.1"
-  resolved "https://registry.yarnpkg.com/svg-path-bounds/-/svg-path-bounds-1.0.1.tgz#bf458b783726bf53431b4633f2792f60748d9f74"
-  integrity sha1-v0WLeDcmv1NDG0Yz8nkvYHSNn3Q=
+  resolved "https://github.com/maitysubhasis/svg-path-bounds.git#56c5ae271b679b02770c5784f1d56f1767115f7f"
   dependencies:
     abs-svg-path "^0.1.1"
     is-svg-path "^1.0.1"
-    normalize-svg-path "^1.0.0"
+    normalize-svg-path "https://github.com/etgryphon/normalize-svg-path#2f4c9626b677af208d8d8a60a59534f09af7109b"
     parse-svg-path "^0.1.2"
 
 table@^5.2.3:
